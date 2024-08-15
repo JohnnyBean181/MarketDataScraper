@@ -49,7 +49,7 @@ def extract(szse_webpage):
     :param sse_webpage: set to the main page of SSE as default.
     :return: return a list, which contains two row data.
     """
-    log_progress("Start to extract data from SSE in main page.")
+    log_progress("Start to extract data from SZSE in main page.")
     log_progress("Step 1/6. Loading webpage...")
     driver = webdriver.Chrome()  # 设置浏览器为谷歌浏览器
     driver.implicitly_wait(10)
