@@ -1,8 +1,8 @@
-from sse_EOM import process_sse_eom
+import eom_sse
 
 
 def main():
-    process_sse_eom()
+    eom_sse.execute()
 
 
 if __name__ == "__main__":

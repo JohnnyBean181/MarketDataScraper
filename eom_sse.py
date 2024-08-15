@@ -120,7 +120,7 @@ def run_query(query_statement, sql_connection):
     return query_output
 
 
-def process_sse_eom():
+def execute():
     """
     EOM stands for End of Month.
     Although the name has EOM in it, this script should be executed on the
