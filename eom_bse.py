@@ -1,13 +1,31 @@
 import time
 import configparser
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, false
 from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from logger import log_progress
 from datetime import date
 from database_mysql import load_to_MySQL_on_Cloud, run_query
+
+
+def verify(df):
+    cols = ['Company_Num', 'Market_Value', 'Circulation_Market_Value', 'AVG_PE']
+    for col in cols:
+        # 是否存在这个column列
+        if not col in df.columns:
+            log_progress(f"Data verification error, {col} not found.")
+            print(f"Data verification error, {col} not found.")
+            return False
+        # 该列中的数据是否为有效数据，都大于零
+        if not (df[col] > 0).all():
+            log_progress(f"Data verification error, {col} value invalid.")
+            print(f"Data verification error, {col} value invalid.")
+            return False
+
+    log_progress("Data verification complete.")
+    return True
 
 
 def transform(data_rows, data_type: str) -> dict:
@@ -24,8 +42,6 @@ def transform(data_rows, data_type: str) -> dict:
     for row in data_rows:
         entry = row.text.strip().split('\n')
         if "上市公司" in entry[0].strip():
-            print(entry[0].strip())
-            print(entry[1].strip())
             data_dict["Company_Num"] = int(entry[1].strip())
         elif "总市值" in entry[0].strip():
             data_dict["Market_Value"] = float(entry[1].strip())
@@ -126,13 +142,15 @@ def execute():
     df_transformed = extract(url_bse, url_bse2)
     print(df_transformed)
 
-    """  将抓取的数据存入数据库  """
-    # 创建 SQLAlchemy 引擎
-    connection_string = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{database}"
-    engine = create_engine(connection_string)
+    """  验证数据是否完整  """
+    if verify(df_transformed):
+        """  将抓取的数据存入数据库  """
+        # 创建 SQLAlchemy 引擎
+        connection_string = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{database}"
+        engine = create_engine(connection_string)
 
-    # 将 DataFrame 写入 MySQL
-    load_to_MySQL_on_Cloud(df_transformed, engine, table_name)
+        # 将 DataFrame 写入 MySQL
+        load_to_MySQL_on_Cloud(df_transformed, engine, table_name)
 
     """  从数据库读取数据并打印在控制台  """
     # Q3 = f"SELECT Market_Type from {table_name}"
