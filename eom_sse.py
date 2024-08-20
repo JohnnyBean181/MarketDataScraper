@@ -8,34 +8,7 @@ from selenium.webdriver.common.by import By
 from logger import log_progress
 from datetime import date
 from database_mysql import load_to_MySQL_on_Cloud, run_query
-
-
-def transform(data_rows, data_type: str) -> dict:
-    """
-    This function receive raw data from webpage, and transforms
-    data into int or floats, and adds Date to the Dict.
-
-    :param data_rows: raw data in rows.
-    :return: dict
-    """
-    log_progress(f"Start to transform data for {data_type}.")
-    data_dict = dict()
-
-    for row in data_rows:
-        entry = row.text.strip().split('\n')
-        if "上市公司" in entry[0]:
-            data_dict["Company_Num"] = int(entry[1])
-        elif "总市值" in entry[0]:
-            data_dict["Market_Value"] = float(entry[1])
-        elif "流通市值" in entry[0]:
-            data_dict["Circulation_Market_Value"] = float(entry[1])
-        elif "平均市盈率" in entry[0]:
-            data_dict["AVG_PE"] = float(entry[1])
-    data_dict["Date"] = date.today()
-    data_dict["Market_Type"] = data_type
-
-    log_progress("Data transformation complete.")
-    return data_dict
+from data_tool import verify, transform
 
 
 def extract(sse_webpage):
@@ -50,8 +23,9 @@ def extract(sse_webpage):
     log_progress("Start to extract data from SSE in main page.")
     log_progress("Step 1/6. Loading webpage...")
     driver = webdriver.Chrome()  # 设置浏览器为谷歌浏览器
+    driver.implicitly_wait(10)
     driver.get(sse_webpage)  # 加载页面
-    time.sleep(5)  # 等待5秒
+    driver.maximize_window()
 
     log_progress("Step 2/6. Scroll down to locate the table...")
     # 查找上交所首页中的数据表格，该表格需要等待下拉后才能加载
@@ -114,19 +88,21 @@ def execute():
 
     """  从交易所首页抓取数据  """
     df_transformed = extract(url)
-    #  print(df_transformed)
+    print(df_transformed)
 
-    """  将抓取的数据存入数据库  """
-    # 创建 SQLAlchemy 引擎
-    connection_string = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{database}"
-    engine = create_engine(connection_string)
+    """  验证数据是否完整  """
+    if verify(df_transformed):
+        """  将抓取的数据存入数据库  """
+        # 创建 SQLAlchemy 引擎
+        connection_string = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{database}"
+        engine = create_engine(connection_string)
 
-    # 将 DataFrame 写入 MySQL
-    load_to_MySQL_on_Cloud(df_transformed, engine, table_name)
+        # 将 DataFrame 写入 MySQL
+        load_to_MySQL_on_Cloud(df_transformed, engine, table_name)
 
     """  从数据库读取数据并打印在控制台  """
-    Q3 = f"SELECT Market_Type from {table_name} LIMIT 5"
-    df_retrieved = run_query(Q3, engine)
-    print(df_retrieved)
+    # Q3 = f"SELECT Market_Type from {table_name} LIMIT 5"
+    # df_retrieved = run_query(Q3, engine)
+    # print(df_retrieved)
 
 
