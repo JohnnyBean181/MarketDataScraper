@@ -12,9 +12,9 @@ def get_last_day_of_last_month():
 
 
 def main():
-    # eom_sse.execute()
-    #eom_szse.execute()
-    eom_bse.execute()
+    eom_sse.execute()
+    # eom_szse.execute()
+    # eom_bse.execute()
     last_day = date.today()
     # retriever.get_eom(last_day)
 

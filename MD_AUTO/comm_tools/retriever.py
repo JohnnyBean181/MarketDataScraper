@@ -1,7 +1,7 @@
 import configparser
 from sqlalchemy import create_engine
 from openpyxl import load_workbook
-from MD_AUTO.comm_tools.database_mysql import run_query
+from MD_AUTO.comm_tools.database_mysql import run_query, open_mysql
 from MD_AUTO.comm_tools.config import Config
 
 
@@ -28,22 +28,22 @@ def get_eom(day):
     # 通过Config读取config.ini的参数
     c = Config()
 
-    # 创建 SQLAlchemy 引擎
-    connection_string = (f"mysql+mysqlconnector://{c.user}:{c.password}"
-                         f"@{c.host}:{c.port}/{c.database}")
-    engine = create_engine(connection_string)
+    with open_mysql(c) as engine:
+        Q3 = f"SELECT * from {c.table_name} WHERE Date='{day}' "
+        # 查询数据
+        df_retrieved = run_query(Q3, engine)
+        """  对列进行排序  """
+        # 将返回的数据排序，并重命名表头
+        df_retrieved = reorder_cols(df_retrieved)
+        rename_cols(df_retrieved)
+        # 存入文件
+        df_retrieved.to_excel('output.xlsx', index=False)
 
-    Q3 = f"SELECT * from {c.table_name} WHERE Date='{day}' "
-    df_retrieved = run_query(Q3, engine)
-    df_retrieved = reorder_cols(df_retrieved)
-    rename_cols(df_retrieved)
-    df_retrieved.to_excel('output.xlsx', index=False)
-
+    """  调节表格宽度  """
     # 加载已经存在的Excel文件
     wb = load_workbook('output.xlsx')
     # 获取当前活动的工作表
     sheet = wb.active
-
     # 设置每列的列宽为自动调整
     for col in sheet.columns:
         sheet.column_dimensions[col[0].column_letter].auto_size = True

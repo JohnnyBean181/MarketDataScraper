@@ -1,5 +1,8 @@
 import pandas as pd
+from sqlalchemy import create_engine
+from contextlib import contextmanager
 from MD_AUTO.comm_tools.logger import log_progress
+from MD_AUTO.comm_tools.config import Config
 
 
 def load_to_MySQL_on_Cloud(df, sql_connection, table_name):
@@ -33,3 +36,17 @@ def run_query(query_statement, sql_connection):
     query_output = pd.read_sql(query_statement, sql_connection)
     log_progress(f"Query output is : {query_output}")
     return query_output
+
+
+@contextmanager
+def open_mysql(c:Config):
+    try:
+        # 创建 SQLAlchemy 引擎
+        connection_string = (f"mysql+mysqlconnector://{c.user}:{c.password}"
+                             f"@{c.host}:{c.port}/{c.database}")
+        engine = create_engine(connection_string)
+        yield engine
+    finally:
+        if engine is not None:
+            # 释放引擎
+            engine.dispose()

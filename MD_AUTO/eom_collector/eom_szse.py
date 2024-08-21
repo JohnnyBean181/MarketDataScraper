@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 from datetime import date
 from MD_AUTO.comm_tools.logger import log_progress
 from MD_AUTO.comm_tools.database_mysql import load_to_MySQL_on_Cloud, run_query
+from MD_AUTO.comm_tools.database_mysql import open_mysql
 from MD_AUTO.comm_tools.data_tool import verify, transform
 from MD_AUTO.comm_tools.config import Config
 
@@ -84,13 +85,9 @@ def execute():
     """  验证数据是否完整  """
     if verify(df_transformed):
         """  将抓取的数据存入数据库  """
-        # 创建 SQLAlchemy 引擎
-        connection_string = (f"mysql+mysqlconnector://{c.user}:{c.password}"
-                             f"@{c.host}:{c.port}/{c.database}")
-        engine = create_engine(connection_string)
-
-        # 将 DataFrame 写入 MySQL
-        load_to_MySQL_on_Cloud(df_transformed, engine, c.table_name)
+        with open_mysql(c) as engine:
+            # 将 DataFrame 写入 MySQL
+            load_to_MySQL_on_Cloud(df_transformed, engine, c.table_name)
 
     """  从数据库读取数据并打印在控制台  """
     # Q3 = f"SELECT Market_Type from {table_name} LIMIT 5"
