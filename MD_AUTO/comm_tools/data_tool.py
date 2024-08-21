@@ -1,5 +1,5 @@
-from logger import log_progress
 from datetime import date
+from MD_AUTO.comm_tools.logger import log_progress
 
 
 def verify(df):

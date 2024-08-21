@@ -5,9 +5,9 @@ from sqlalchemy import create_engine, false
 from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
-from logger import log_progress
-from database_mysql import load_to_MySQL_on_Cloud, run_query
-from data_tool import verify, transform
+from MD_AUTO.comm_tools.logger import log_progress
+from MD_AUTO.comm_tools.database_mysql import load_to_MySQL_on_Cloud, run_query
+from MD_AUTO.comm_tools.data_tool import verify, transform
 
 
 def extract(bse_webpage, bse_webpage2):

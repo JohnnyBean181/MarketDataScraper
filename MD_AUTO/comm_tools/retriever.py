@@ -1,7 +1,8 @@
 import configparser
 from sqlalchemy import create_engine
-from database_mysql import run_query
 from openpyxl import load_workbook
+from MD_AUTO.comm_tools.database_mysql import run_query
+
 
 def rename_cols(df):
     e_name = ['Company_Num', 'Market_Value', 'Circulation_Market_Value',

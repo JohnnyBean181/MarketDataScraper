@@ -1,5 +1,5 @@
 import pandas as pd
-from logger import log_progress
+from MD_AUTO.comm_tools.logger import log_progress
 
 
 def load_to_MySQL_on_Cloud(df, sql_connection, table_name):
