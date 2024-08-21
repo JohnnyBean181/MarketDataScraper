@@ -2,6 +2,7 @@ import configparser
 from sqlalchemy import create_engine
 from openpyxl import load_workbook
 from MD_AUTO.comm_tools.database_mysql import run_query
+from MD_AUTO.comm_tools.config import Config
 
 
 def rename_cols(df):
@@ -24,23 +25,15 @@ def reorder_cols(df):
 
 
 def get_eom(day):
-    # 创建 ConfigParser 对象
-    config = configparser.ConfigParser()
-    # 读取 ini 文件
-    config.read('config.ini')
-    # 提取数据库连接信息
-    user = config['database']['user']
-    password = config['database']['password']
-    host = config['database']['host']
-    port = config['database']['port']
-    database = config['database']['database']
-    table_name = config['database']['table_name']
+    # 通过Config读取config.ini的参数
+    c = Config()
 
     # 创建 SQLAlchemy 引擎
-    connection_string = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{database}"
+    connection_string = (f"mysql+mysqlconnector://{c.user}:{c.password}"
+                         f"@{c.host}:{c.port}/{c.database}")
     engine = create_engine(connection_string)
 
-    Q3 = f"SELECT * from {table_name} WHERE Date='{day}' "
+    Q3 = f"SELECT * from {c.table_name} WHERE Date='{day}' "
     df_retrieved = run_query(Q3, engine)
     df_retrieved = reorder_cols(df_retrieved)
     rename_cols(df_retrieved)

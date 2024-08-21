@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 from MD_AUTO.comm_tools.logger import log_progress
 from MD_AUTO.comm_tools.database_mysql import load_to_MySQL_on_Cloud, run_query
 from MD_AUTO.comm_tools.data_tool import verify, transform
+from MD_AUTO.comm_tools.config import Config
 
 
 def extract(bse_webpage, bse_webpage2):
@@ -78,33 +79,22 @@ def execute():
 
     """  读取参数  """
     # 创建 ConfigParser 对象
-    config = configparser.ConfigParser()
-    # 读取 ini 文件
-    config.read('config.ini')
-    # 提取常规数据，如网页等
-    url_bse = config['DEFAULT']['url_bse']
-    url_bse2 = config['DEFAULT']['url_bse2']
-    # 提取数据库连接信息
-    user = config['database']['user']
-    password = config['database']['password']
-    host = config['database']['host']
-    port = config['database']['port']
-    database = config['database']['database']
-    table_name = config['database']['table_name']
+    c = Config()
 
     """  从交易所首页抓取数据  """
-    df_transformed = extract(url_bse, url_bse2)
+    df_transformed = extract(c.url_bse, c.url_bse2)
     print(df_transformed)
 
     """  验证数据是否完整  """
     if verify(df_transformed):
         """  将抓取的数据存入数据库  """
         # 创建 SQLAlchemy 引擎
-        connection_string = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{database}"
+        connection_string = (f"mysql+mysqlconnector://{c.user}:{c.password}"
+                             f"@{c.host}:{c.port}/{c.database}")
         engine = create_engine(connection_string)
 
         # 将 DataFrame 写入 MySQL
-        load_to_MySQL_on_Cloud(df_transformed, engine, table_name)
+        load_to_MySQL_on_Cloud(df_transformed, engine, c.table_name)
 
     """  从数据库读取数据并打印在控制台  """
     # Q3 = f"SELECT Market_Type from {table_name}"
