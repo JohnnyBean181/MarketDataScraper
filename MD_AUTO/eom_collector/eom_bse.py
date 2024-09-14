@@ -1,14 +1,13 @@
 import time
 import configparser
 import pandas as pd
-from sqlalchemy import create_engine, false
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 
 from MD_AUTO.comm_tools.logger import log_progress
+from MD_AUTO.comm_tools.data_tool import verify, transform
 from MD_AUTO.comm_tools.database_mysql import load_to_MySQL_on_Cloud, run_query
 from MD_AUTO.comm_tools.database_mysql import open_mysql
-from MD_AUTO.comm_tools.data_tool import verify, transform
 from MD_AUTO.comm_tools.config import Config
 from MD_AUTO.comm_tools.selenium import open_chrome
 

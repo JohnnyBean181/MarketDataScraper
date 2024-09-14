@@ -3,7 +3,6 @@ import configparser
 import pandas as pd
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
-from datetime import date
 
 from MD_AUTO.comm_tools.logger import log_progress
 from MD_AUTO.comm_tools.data_tool import verify, transform

@@ -19,3 +19,10 @@ class Config:
         self.url_szse = config['DEFAULT']['url_szse'] # 深交所网页
         self.url_bse = config['DEFAULT']['url_bse'] # 北交所网页1
         self.url_bse2 = config['DEFAULT']['url_bse2']#  北交所网页2
+        self.sse_vol_stc_m = config['DEFAULT']['url_sse_volumn_stock_month']
+        self.sse_vol_stc_y = config['DEFAULT']['url_sse_volumn_stock_year']
+        self.sse_vol_fnd_m = config['DEFAULT']['url_sse_volumn_fund_month']
+        self.sse_vol_fnd_y = config['DEFAULT']['url_sse_volumn_fund_year']
+        self.sse_vol_bnd_m = config['DEFAULT']['url_sse_volumn_bond_month']
+        self.sse_vol_all = config['DEFAULT']['url_sse_volumn_overall']
+        self.sse_vol_mrg = config['DEFAULT']['url_sse_volumn_margin']
