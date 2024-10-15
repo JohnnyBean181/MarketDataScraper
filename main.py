@@ -1,7 +1,7 @@
 from unittest.mock import inplace
 from datetime import date, timedelta
-from MD_AUTO.eom_collector import eom_sse, eom_szse, eom_bse
-from MD_AUTO.comm_tools import retriever
+from marketdata_collector.eom_collector import eom_sse, eom_szse, eom_bse
+from marketdata_collector.comm_tools import retriever
 
 
 def get_last_day_of_last_month():
