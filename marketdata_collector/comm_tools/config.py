@@ -14,6 +14,7 @@ class Config:
         self.port = config['database']['port']
         self.database = config['database']['database']
         self.table_name = config['database']['table_name']
+        self.table_vol = config['database']['table_volume']
         # 提取常规数据，如网页等
         self.url_sse = config['DEFAULT']['url_sse'] # 上交所网页
         self.url_szse = config['DEFAULT']['url_szse'] # 深交所网页

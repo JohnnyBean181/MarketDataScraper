@@ -1,6 +1,7 @@
 from unittest.mock import inplace
 from datetime import date, timedelta
 from marketdata_collector.eom_collector import eom_sse, eom_szse, eom_bse
+from marketdata_collector.volume_collector import volume_sse
 from marketdata_collector.comm_tools import retriever
 
 
@@ -12,9 +13,10 @@ def get_last_day_of_last_month():
 
 
 def main():
-    eom_sse.execute()
-    eom_szse.execute()
-    eom_bse.execute()
+    #eom_sse.execute()
+    #eom_szse.execute()
+    #eom_bse.execute()
+    volume_sse.execute()
     last_day = date.today()
     # retriever.get_eom(last_day)
 
