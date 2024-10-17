@@ -39,6 +39,24 @@ def verify_vol(df):
     return True
 
 
+def verify_bse_vol(df):
+    cols = ['Stock_Vol_Month', 'Bond_Vol_Month']
+    for col in cols:
+        # 是否存在这个column列
+        if not col in df.columns:
+            log_progress(f"Data verification error, {col} not found.")
+            print(f"Data verification error, {col} not found.")
+            return False
+        # 该列中的数据是否为有效数据，都大于等于零
+        if not (df[col] >= 0).all():
+            log_progress(f"Data verification error, {col} value invalid.")
+            print(f"Data verification error, {col} value invalid.")
+            return False
+
+    log_progress("Data verification complete.")
+    return True
+
+
 def transform(data_rows, data_type: str) -> dict:
     """
     This function receive raw data from webpage, and transforms

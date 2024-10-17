@@ -21,12 +21,21 @@ class Config:
         self.url_bse = config['DEFAULT']['url_bse'] # 北交所网页1
         self.url_bse2 = config['DEFAULT']['url_bse2']#  北交所网页2
 
+        # sse monthly trading data
         self.sse_vol_stc_m = config['DEFAULT']['url_sse_volumn_stock_month']
         self.sse_vol_fnd_m = config['DEFAULT']['url_sse_volumn_fund_month']
         self.sse_vol_bnd_m = config['DEFAULT']['url_sse_volumn_bond_month']
         self.sse_vol_mrg = config['DEFAULT']['url_sse_volumn_margin']
 
+        # szse monthly trading data
         self.szse_vol_stc_m = config['DEFAULT']['url_szse_volumn_stock_month']
         self.szse_vol_fnd_m = config['DEFAULT']['url_szse_volumn_fund_month']
         self.szse_vol_bnd_m = config['DEFAULT']['url_szse_volumn_bond_month']
         self.szse_vol_mrg = config['DEFAULT']['url_szse_volumn_margin']
+
+        # bse monthly trading data
+        self.bse_vol_stc_m = config['DEFAULT']['url_bse_volumn_stock_month']
+        self.bse_vol_bnd_m = config['DEFAULT']['url_bse_volumn_bond_month']
+
+        # czce monthly trading data
+        self.url_czce_fut_m = config['DEFAULT']['url_czce_fut_month']
