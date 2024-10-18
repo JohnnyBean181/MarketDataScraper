@@ -40,3 +40,4 @@ class Config:
 
         # czce monthly trading data
         self.czce_fut_m = config['DEFAULT']['url_czce_fut_month']
+        self.dce_fut_m = config['DEFAULT']['url_dce_fut_month']

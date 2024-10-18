@@ -38,8 +38,9 @@ def get_firefox_option(download_dir):
     profile.set_preference("browser.download.folderList", 2)  # 2: 使用自定义下载路径
     profile.set_preference("browser.download.dir", download_dir)  # 替换为您希望的下载目录
     profile.set_preference("browser.helperApps.neverAsk.saveToDisk",
-                           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")  # 比如 pdf 文件
-    # profile.set_preference("pdfjs.disabled", True)  # 如果您在处理 PDF 下载，禁用内置 PDF 查看器
+                           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")  # 比如 xlsx 文件
+    profile.set_preference("browser.helperApps.neverAsk.saveToDisk","application/pdf") # 比如 pdf 文件
+    profile.set_preference("pdfjs.disabled", True)  # 如果您在处理 PDF 下载，禁用内置 PDF 查看器
     profile.set_preference("browser.download.manager.showWhenStarting", False)  # 不显示下载管理器
 
     # 创建 Firefox 选项
