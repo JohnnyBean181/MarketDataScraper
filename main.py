@@ -2,6 +2,7 @@ from unittest.mock import inplace
 from datetime import date, timedelta
 from marketdata_collector.eom_collector import eom_sse, eom_szse, eom_bse
 from marketdata_collector.volume_collector import volume_sse, volume_szse, volume_bse
+from marketdata_collector.future_collector import fut_czce
 from marketdata_collector.comm_tools import retriever
 
 
@@ -18,8 +19,9 @@ def main():
     #eom_bse.execute()
     #volume_sse.execute()
     #volume_szse.execute()
-    volume_bse.execute()
-    last_day = date.today()
+    #volume_bse.execute()
+    fut_czce.execute()
+    #last_day = date.today()
     # retriever.get_eom(last_day)
 
 if __name__ == "__main__":

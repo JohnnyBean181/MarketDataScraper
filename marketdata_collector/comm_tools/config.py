@@ -15,6 +15,7 @@ class Config:
         self.database = config['database']['database']
         self.table_name = config['database']['table_name']
         self.table_vol = config['database']['table_volume']
+        self.table_fut = config['database']['table_future']
         # 提取常规数据，如网页等
         self.url_sse = config['DEFAULT']['url_sse'] # 上交所网页
         self.url_szse = config['DEFAULT']['url_szse'] # 深交所网页
@@ -38,4 +39,4 @@ class Config:
         self.bse_vol_bnd_m = config['DEFAULT']['url_bse_volumn_bond_month']
 
         # czce monthly trading data
-        self.url_czce_fut_m = config['DEFAULT']['url_czce_fut_month']
+        self.czce_fut_m = config['DEFAULT']['url_czce_fut_month']
