@@ -8,7 +8,8 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 
 from marketdata_collector.comm_tools.logger import log_progress
-from marketdata_collector.comm_tools.data_tool import verify_vol, transform
+from marketdata_collector.comm_tools.data_tool import verify_vol, transform, get_last_day_of_previous_month, get_last_month
+from marketdata_collector.comm_tools.data_tool import get_last_trading_day_of_previous_month
 from marketdata_collector.comm_tools.database_mysql import load_to_MySQL_on_Cloud, run_query
 from marketdata_collector.comm_tools.database_mysql import open_mysql
 from marketdata_collector.comm_tools.config import Config
@@ -47,7 +48,7 @@ class VolumeDict:
     def get_df(self):
         return pd.DataFrame(self.data, index=[0])
 
-def find_vol_from_web(driver, webpage, tr, td):
+def find_vol_from_web(driver, webpage, tr, td, date):
     log_progress("Step 1/3. Loading webpage vol ...")
     driver.get(webpage)  # 加载页面
     time.sleep(1)
@@ -55,13 +56,11 @@ def find_vol_from_web(driver, webpage, tr, td):
     # click on "date bar", so a panel will show up
     date_bar = driver.find_element(by=By.CLASS_NAME, value="c-monthpicker-container")
     date_input = date_bar.find_element(by=By.TAG_NAME, value="input")
-    date_input.click()
+    date_input.clear()
+    date_input.send_keys(date[:7])
+    # date_input.click()
     time.sleep(1)
-    # choose the target month
-    date_picker = driver.find_element(by=By.CLASS_NAME, value="monthselect")
-    items = date_picker.find_elements(by=By.TAG_NAME, value="li")
-    items[8].click()
-    time.sleep(1)
+
     # then click on "select button"
     select_btn = driver.find_element(by=By.CSS_SELECTOR, value=".confirm-query.btn-query-primary")
     select_btn.click()
@@ -91,7 +90,8 @@ def find_mrg_from_web(driver, webpage, date):
     # enter date in "date input" bar
     text_input = driver.find_element(by=By.ID, value="1837_xxpl_tab1_txtDate")
     text_input.clear()
-    text_input.send_keys("2024-09-30")
+    last_trading_day = get_last_trading_day_of_previous_month()
+    text_input.send_keys(str(last_trading_day))
     time.sleep(1)
 
     # then click on "select button"
@@ -120,22 +120,28 @@ def extract(c):
     """
     log_progress("Start to extract monthly vol data from SZSE webpage.")
     with open_chrome() as driver:
-        stock_m = find_vol_from_web(driver, c.szse_vol_stc_m, 1, 3)
-        # save data into VolumeDict
+        # create VolumeDict
         data_dict = VolumeDict("深市")
-        data_dict.set_date(getdate(2024,9,30))
+
+        # setup date
+        last_day_of_previous_month = get_last_day_of_previous_month()
+        data_dict.set_date(last_day_of_previous_month)
+
+        # find 'stock volume' and save it into 'VolumeDict'
+        stock_m = find_vol_from_web(driver, c.szse_vol_stc_m, 1, 3, str(last_day_of_previous_month))
         data_dict.set_stock_m(stock_m)
 
-        fund_m = find_vol_from_web(driver, c.szse_vol_fnd_m, 4, 2)
-        # save data into VolumeDict
+        # find 'fund volume' and save it into 'VolumeDict'
+        fund_m = find_vol_from_web(driver, c.szse_vol_fnd_m, 4, 2, str(last_day_of_previous_month))
         data_dict.set_fund_m(fund_m)
 
-        bond_m = find_vol_from_web(driver, c.szse_vol_bnd_m, -1, 1)
-        # save data into VolumeDict
+        # find 'bond volume' and save it into 'VolumeDict'
+        bond_m = find_vol_from_web(driver, c.szse_vol_bnd_m, -1, 1, str(last_day_of_previous_month))
         data_dict.set_bond_m(bond_m)
 
-        mrg1, mrg2 = find_mrg_from_web(driver, c.szse_vol_mrg, "20240930")
-        # save data into VolumeDict
+        # find 'margin volume' and save it into 'VolumeDict'
+        date_str = str(last_day_of_previous_month).replace('-', '')
+        mrg1, mrg2 = find_mrg_from_web(driver, c.szse_vol_mrg, date_str)
         data_dict.set_mrg(mrg1, mrg2)
 
         log_progress("Data extraction complete...")

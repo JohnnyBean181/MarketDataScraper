@@ -1,9 +1,9 @@
 from unittest.mock import inplace
 from datetime import date, timedelta
 from marketdata_collector.eom_collector import eom_sse, eom_szse, eom_bse
+from marketdata_collector.daily_routine import trading_days
 from marketdata_collector.volume_collector import volume_sse, volume_szse, volume_bse
-from marketdata_collector.future_collector import fut_czce, fut_dce
-from marketdata_collector.comm_tools import retriever
+from marketdata_collector.comm_tools import retriever, data_tool, config
 
 
 def get_last_day_of_last_month():
@@ -19,10 +19,10 @@ def main():
     #eom_bse.execute()
     #volume_sse.execute()
     #volume_szse.execute()
-    #volume_bse.execute()
-    #fut_czce.execute()
-    fut_dce.execute()
-    #last_day = date.today()
+    volume_bse.execute()
+    #trading_days.execute()
+    #data_tool.get_last_trading_day_of_previous_month()
+    last_day = date.today()
     # retriever.get_eom(last_day)
 
 if __name__ == "__main__":

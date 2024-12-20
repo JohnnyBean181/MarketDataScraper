@@ -1,5 +1,7 @@
-from datetime import date
+from datetime import date, timedelta
 from marketdata_collector.comm_tools.logger import log_progress
+from marketdata_collector.comm_tools.config import Config
+from marketdata_collector.comm_tools.database_mysql import open_mysql, run_query
 
 
 def verify(df):
@@ -95,8 +97,39 @@ def transform(data_rows, data_type: str) -> dict:
             data_dict["Circulation_Market_Value"] = float(entry[1].strip())
         elif "平均市盈率" in entry[0].strip():
             data_dict["AVG_PE"] = float(entry[1].strip())
-    data_dict["Date"] = date.today()
+    data_dict["Date"] = date.today() - timedelta(days=1)
     data_dict["Market_Type"] = data_type
 
     log_progress("Data transformation complete.")
     return data_dict
+
+def get_last_day_of_previous_month():
+    # 获取当前日期
+    today = date.today()
+    # 将当前日期设置为本月第一天，然后减去一天
+    first_day_of_current_month = today.replace(day=1)
+    last_day_of_previous_month = first_day_of_current_month - timedelta(days=1)
+    return last_day_of_previous_month
+
+def belong_to_same_year_month(date1, date2):
+    date2_str = str(date2).replace('-', '')
+    if date1[:6] == date2_str[:6]:
+        return True
+    else:
+        return False
+
+def get_last_month():
+    # 获取当前日期
+    today = date.today()
+
+    return today.month - 1
+
+def get_last_trading_day_of_previous_month():
+    c = Config()
+    # 获取当前日期
+    last_day_prev_month = get_last_day_of_previous_month()
+    query = f"SELECT * from {c.table_trading_days} WHERE MONTH(Date) = {last_day_prev_month.month} AND YEAR(Date) = {last_day_prev_month.year} ORDER BY Date DESC LIMIT 1"
+    with open_mysql(c) as engine:
+        df_retrieved = run_query(query, engine)
+    print(df_retrieved.iloc[0,0])
+    return df_retrieved.iloc[0,0]

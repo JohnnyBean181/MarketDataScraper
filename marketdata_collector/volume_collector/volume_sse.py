@@ -1,14 +1,15 @@
 import time
 import configparser
 from re import split
-from datetime import date as getdate
+from datetime import date, timedelta
 
 import pandas as pd
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 
 from marketdata_collector.comm_tools.logger import log_progress
-from marketdata_collector.comm_tools.data_tool import verify_vol, transform
+from marketdata_collector.comm_tools.data_tool import verify_vol, get_last_day_of_previous_month
+from marketdata_collector.comm_tools.data_tool import transform, belong_to_same_year_month
 from marketdata_collector.comm_tools.database_mysql import load_to_MySQL_on_Cloud, run_query
 from marketdata_collector.comm_tools.database_mysql import open_mysql
 from marketdata_collector.comm_tools.config import Config
@@ -78,12 +79,11 @@ def find_mrg_from_web(driver, webpage, date):
     rows = tbody.find_elements(By.TAG_NAME, "tr")
     for row in rows:
         tds = row.find_elements(By.TAG_NAME, 'td')
-        if tds[0].text == date:
+        if belong_to_same_year_month(tds[0].text, date):
             return tds[1].text, tds[4].text
         continue
 
     return None
-
 
 def extract(c):
     """
@@ -96,21 +96,28 @@ def extract(c):
     """
     log_progress("Start to extract monthly vol data from SSE webpage.")
     with open_chrome() as driver:
-        stock_m = find_vol_from_web(driver, c.sse_vol_stc_m, 3, 1)
-        # save data into VolumeDict
+        # create VolumeDict
         data_dict = VolumeDict("沪市")
-        data_dict.set_date(getdate(2024,9,30))
+
+        # setup date
+        last_day_of_previous_month = get_last_day_of_previous_month()
+        data_dict.set_date(last_day_of_previous_month)
+
+        # find 'stock volume' and save it into 'VolumeDict'
+        stock_m = find_vol_from_web(driver, c.sse_vol_stc_m, 3, 1)
         data_dict.set_stock_m(stock_m)
 
+        # find 'fund volume' and save it into 'VolumeDict'
         fund_m = find_vol_from_web(driver, c.sse_vol_fnd_m, 1, 1)
-        # save data into VolumeDict
         data_dict.set_fund_m(fund_m)
 
+        # find 'bond volume' and save it into 'VolumeDict'
         bond_m = find_vol_from_web(driver, c.sse_vol_bnd_m, -1, 2)
-        # save data into VolumeDict
         data_dict.set_bond_m(bond_m)
 
-        mrg1, mrg2 = find_mrg_from_web(driver, c.sse_vol_mrg, "20240930")
+        # find 'margin volume' and save it into 'VolumeDict'
+        date_str = str(last_day_of_previous_month).replace('-', '')
+        mrg1, mrg2 = find_mrg_from_web(driver, c.sse_vol_mrg, date_str)
         # save data into VolumeDict
         data_dict.set_mrg(mrg1, mrg2)
 
