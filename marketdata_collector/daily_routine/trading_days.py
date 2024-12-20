@@ -1,7 +1,6 @@
 import configparser
 import pandas as pd
-from datetime import date as get_date
-from datetime import timedelta
+from datetime import date, timedelta
 from selenium.webdriver.common.by import By
 
 from marketdata_collector.comm_tools.logger import log_progress
@@ -32,13 +31,11 @@ def extract(sse_webpage):
         # 读取表格中的数据，每一个tr中包含一个数据
         row = tbody.find_element(By.TAG_NAME, "tr")
         tds = row.find_elements(By.TAG_NAME, 'td')
-        date_str = tds[0].text
-        date = get_date(int(date_str[:4]), int(date_str[4:6]), int(date_str[6:]))
+        if tds[0].text == "暂无数据":
+            return None
 
-        if date == get_date.today() - timedelta(days=1):
-            return date
-
-        return None
+        yesterday = date.today() - timedelta(days=1)
+        return yesterday
 
 def execute():
     """
@@ -53,7 +50,7 @@ def execute():
     c = Config()
 
     """  从交易所首页抓取数据  """
-    date = extract(c.sse_vol_mrg)
+    date = extract(c.sse_vol_stc_d)
     print(date)
 
     """  验证数据是否完整  """

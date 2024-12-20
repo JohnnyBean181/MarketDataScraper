@@ -43,3 +43,7 @@ class Config:
         # czce monthly trading data
         self.czce_fut_m = config['DEFAULT']['url_czce_fut_month']
         self.dce_fut_m = config['DEFAULT']['url_dce_fut_month']
+
+        # sse monthly trading data
+        # we use it to verify if yesterday is a trading day.
+        self.sse_vol_stc_d = config['DEFAULT']['url_sse_volumn_stock_day']
