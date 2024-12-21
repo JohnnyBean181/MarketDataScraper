@@ -45,6 +45,10 @@ class VolumeDict:
         self.data["Margin1"] = margin_fixed(margin1)
         self.data["Margin2"] = margin_fixed(margin2)
 
+    def set_overall_m(self, overall_m):
+        val_cleaned = overall_m.replace(",", "")
+        self.data["Overall_Vol_Month"] = float(val_cleaned)/100000000
+
     def get_df(self):
         return pd.DataFrame(self.data, index=[0])
 
@@ -109,6 +113,33 @@ def find_mrg_from_web(driver, webpage, date):
     return tds[1].text, tds[4].text
 
 
+def find_overall_vol_from_web(driver, webpage, date):
+    log_progress("Step 1/4. Loading webpage vol ...")
+    driver.get(webpage)  # 加载页面
+    time.sleep(1)
+
+    log_progress("Step 2/4. Verify the target month...")
+    # Check if data is up-to-date
+    # TODO
+
+    log_progress("Step 3/4. Retrieving link from the table...")
+    # find the first node with class name of "newslist" - 市场总貌
+    node = driver.find_element(By.CLASS_NAME, "newslist")
+    divs = node.find_elements(By.TAG_NAME, "div")
+    # get the link inside the third div in the list - 成交概况
+    a_element = divs[2].find_element(By.TAG_NAME, "a")
+    link = a_element.get_attribute("href")
+    driver.get(link) # 加载页面
+
+    log_progress("Step 4/4. Retrieving data from the table...")
+    # find the bottom row in the first table
+    row = driver.find_element(By.CLASS_NAME, "tb_bottom_row")
+    tds = row.find_elements(By.TAG_NAME, "td")
+    td_text = tds[3].text
+
+    return td_text
+
+
 def extract(c):
     """
     This function aims to extract the required
@@ -143,6 +174,10 @@ def extract(c):
         date_str = str(last_day_of_previous_month).replace('-', '')
         mrg1, mrg2 = find_mrg_from_web(driver, c.szse_vol_mrg, date_str)
         data_dict.set_mrg(mrg1, mrg2)
+
+        # find 'overall volume' and save it into 'VolumeDict'
+        overall_m = find_overall_vol_from_web(driver, c.szse_vol_overall_m, str(last_day_of_previous_month))
+        data_dict.set_overall_m(overall_m)
 
         log_progress("Data extraction complete...")
 

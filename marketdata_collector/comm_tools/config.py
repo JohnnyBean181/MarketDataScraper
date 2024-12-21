@@ -28,12 +28,14 @@ class Config:
         self.sse_vol_fnd_m = config['DEFAULT']['url_sse_volumn_fund_month']
         self.sse_vol_bnd_m = config['DEFAULT']['url_sse_volumn_bond_month']
         self.sse_vol_mrg = config['DEFAULT']['url_sse_volumn_margin']
+        self.sse_vol_overall_m = config['DEFAULT']['url_sse_volumn_overall']
 
         # szse monthly trading data
         self.szse_vol_stc_m = config['DEFAULT']['url_szse_volumn_stock_month']
         self.szse_vol_fnd_m = config['DEFAULT']['url_szse_volumn_fund_month']
         self.szse_vol_bnd_m = config['DEFAULT']['url_szse_volumn_bond_month']
         self.szse_vol_mrg = config['DEFAULT']['url_szse_volumn_margin']
+        self.szse_vol_overall_m = config['DEFAULT']['url_szse_volumn_overall']
 
         # bse monthly trading data
         self.bse_vol_stc_m = config['DEFAULT']['url_bse_volumn_stock_month']

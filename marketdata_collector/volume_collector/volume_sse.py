@@ -42,6 +42,9 @@ class VolumeDict:
         self.data["Margin1"] = margin_fixed(margin1)
         self.data["Margin2"] = margin_fixed(margin2)
 
+    def set_overall_m(self, overall_m):
+        self.data["Overall_Vol_Month"] = float(overall_m)
+
     def get_df(self):
         return pd.DataFrame(self.data, index=[0])
 
@@ -120,6 +123,10 @@ def extract(c):
         mrg1, mrg2 = find_mrg_from_web(driver, c.sse_vol_mrg, date_str)
         # save data into VolumeDict
         data_dict.set_mrg(mrg1, mrg2)
+
+        # find 'overall volume' and save it into 'VolumeDict'
+        overall_m = find_vol_from_web(driver, c.sse_vol_overall_m, 8, 1)
+        data_dict.set_overall_m(overall_m)
 
         log_progress("Data extraction complete...")
 

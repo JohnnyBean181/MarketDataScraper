@@ -32,6 +32,10 @@ class VolumeDict:
         val_cleaned = bond_m.replace(",", "")
         self.data["Bond_Vol_Month"] = float(val_cleaned)/10000
 
+    def set_overall_m(self):
+        self.data["Overall_Vol_Month"] = (self.data["Stock_Vol_Month"]
+                                          + self.data["Bond_Vol_Month"])
+
     def set_mrg(self, margin1, margin2):
         self.data["Margin1"] = margin1
         self.data["Margin2"] = margin2
@@ -171,6 +175,9 @@ def extract(c):
         # find 'bond volume' and save it into 'VolumeDict'
         bond_m = find_bond_vol_from_web(driver, c.bse_vol_bnd_m, date_str)
         data_dict.set_bond_m(bond_m)
+
+        # compute 'overall volume' and save it into 'VolumeDict'
+        data_dict.set_overall_m()
 
         # find 'margin volume' and save it into 'VolumeDict'
         mrg1, mrg2 = find_mrg_from_web(driver, c.bse_vol_mrg, date_str)
