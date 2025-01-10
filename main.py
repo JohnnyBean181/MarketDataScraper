@@ -19,10 +19,10 @@ def main():
     #eom_bse.execute()
     #volume_sse.execute()
     #volume_szse.execute()
-    volume_bse.execute()
+    #volume_bse.execute()
     #trading_days.execute()
     #data_tool.get_last_trading_day_of_previous_month()
-    last_day = date.today()
+    #last_day = date.today()
     # retriever.get_eom(last_day)
 
 if __name__ == "__main__":

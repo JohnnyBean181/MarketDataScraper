@@ -1,4 +1,5 @@
 import configparser
+import time
 import pandas as pd
 from datetime import date, timedelta
 from selenium.webdriver.common.by import By
@@ -23,19 +24,23 @@ def extract(sse_webpage):
     with open_chrome() as driver:
         log_progress("Step 1/2. Loading webpage...")
         driver.get(sse_webpage)  # 加载页面
+        time.sleep(1)
 
         log_progress("Step 2/2. Retrieving data from the table...")
         # locate the table in the page
-        table = driver.find_element(By.CLASS_NAME, "table-responsive")
-        tbody = table.find_element(By.TAG_NAME, "tbody")
-        # 读取表格中的数据，每一个tr中包含一个数据
-        row = tbody.find_element(By.TAG_NAME, "tr")
-        tds = row.find_elements(By.TAG_NAME, 'td')
-        if tds[0].text == "暂无数据":
-            return None
+        node = driver.find_element(By.CLASS_NAME, "new_date")
+        new_date = node.text
+
+        # retrieve date from str
+        date_str = new_date[5:]
+        date_list = date_str.split("-")
+        day = date(int(date_list[0]), int(date_list[1]), int(date_list[2]))
 
         yesterday = date.today() - timedelta(days=1)
-        return yesterday
+        if yesterday == day:
+            return yesterday
+
+        return None
 
 def execute():
     """
