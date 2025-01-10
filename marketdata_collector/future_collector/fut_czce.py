@@ -11,6 +11,7 @@ from selenium.webdriver.common.by import By
 
 from marketdata_collector.comm_tools.logger import log_progress
 from marketdata_collector.comm_tools.data_tool import verify_fut, transform
+from marketdata_collector.comm_tools.data_tool import get_last_day_of_previous_month
 from marketdata_collector.comm_tools.database_mysql import load_to_MySQL_on_Cloud, run_query
 from marketdata_collector.comm_tools.database_mysql import open_mysql
 from marketdata_collector.comm_tools.config import Config
@@ -78,8 +79,13 @@ def find_trade_data_from_web(driver, webpage):
     file_list = driver.find_element(by=By.XPATH, value="/html/body/div[3]/div[2]/div[1]/div/div[2]/ul/table/tbody/tr[1]/td")
     links = file_list.find_elements(by=By.TAG_NAME, value="a")
     filename_raw = None
+    last_day_of_previous_month = get_last_day_of_previous_month()
+    # example, 2025
+    year_str = str(last_day_of_previous_month.year)
+    # example, 01
+    month_str = last_day_of_previous_month.strftime("%m")
     for link in links:
-        if '2024' in link.text and '09' in link.text:
+        if year_str in link.text and month_str in link.text:
             link.click()
             filename_raw = link.get_attribute('href')
             time.sleep(5)
@@ -113,7 +119,8 @@ def extract(c):
     with open_firefox() as driver:
         # create a new dict
         data_dict = VolumeDict("CZCE")
-        data_dict.set_date(getdate(2024,9,30))
+        last_day_of_previous_month = get_last_day_of_previous_month()
+        data_dict.set_date(last_day_of_previous_month)
 
         # save data into VolumeDict
         amount,volume,position = find_trade_data_from_web(driver, c.czce_fut_m)

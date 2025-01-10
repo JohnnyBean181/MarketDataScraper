@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from marketdata_collector.eom_collector import eom_sse, eom_szse, eom_bse
 from marketdata_collector.daily_routine import trading_days
 from marketdata_collector.volume_collector import volume_sse, volume_szse, volume_bse
+from marketdata_collector.future_collector import fut_czce
 from marketdata_collector.comm_tools import retriever, data_tool, config
 
 
@@ -21,6 +22,7 @@ def main():
     #volume_szse.execute()
     #volume_bse.execute()
     #trading_days.execute()
+    fut_czce.execute()
     #data_tool.get_last_trading_day_of_previous_month()
     #last_day = date.today()
     # retriever.get_eom(last_day)
